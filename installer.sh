@@ -2,7 +2,12 @@
 #script by Abi Darwish
 
 if [ $(uci -q get system.@system[0].hostname) != "QWRT" ]; then
-	echo "Your device is not compatible"
+	echo "Only QWRT is supported"
+	exit 1
+fi
+
+if [ $(cat /tmp/sysinfo/model) != "Arcadyan AW1000" ]; then
+        echo "Only Arcadyan AW1000 is supported"
 	exit 1
 fi
 
