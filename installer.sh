@@ -1,7 +1,7 @@
 #!/bin/sh
 #script by Abi Darwish
 
-if [ $(uci -q get system.@system[0].hostname) != "QWRT" ]; then
+if [ $(uname -a | cut -d' ' -f2) != "QWRT" ]; then
 	echo "Only QWRT is supported"
 	exit 1
 fi
