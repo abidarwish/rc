@@ -6,7 +6,7 @@ if [ $(uname -a | cut -d' ' -f2) != "QWRT" ]; then
 	exit 1
 fi
 
-if [ $(cat /tmp/sysinfo/model) != "Arcadyan AW1000" ]; then
+if [ "$(cat /tmp/sysinfo/model)" != "Arcadyan AW1000" ]; then
         echo "Only Arcadyan AW1000 is supported"
 	exit 1
 fi
