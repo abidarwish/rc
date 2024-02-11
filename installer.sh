@@ -62,7 +62,7 @@ while true; do
                         	n=$(( $n + 1 ))
                         	echo "$n" >/etc/arca/counter
                         	if [ $(cat /etc/arca/counter) -ge 3 ]; then
-                        		log "Disconnected. Check your sim card"
+                        		log "Disconnected. Check your SIM card"
                         		>/etc/arca/counter
                         		exit 0
                         	fi
