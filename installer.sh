@@ -19,18 +19,18 @@ if [ ! -e /usr/lib/rooter/connect/create_connect.sh.bak ]; then
 	cp /usr/lib/rooter/connect/create_connect.sh /usr/lib/rooter/connect/create_connect.sh.bak
 fi
 
-sed -i '/^.*pgrep -f restart_wan/d;/^$/d' /usr/lib/rooter/connect/create_connect.sh
+sed -i '/^.*pgrep -f change_ip/d;/^$/d' /usr/lib/rooter/connect/create_connect.sh
 
-sed -i '/^.*pgrep -f \/etc\/arca\/restart_wan/d;/^$/d' /usr/lib/rooter/connect/create_connect.sh
+sed -i '/^.*pgrep -f \/etc\/arca\/change_ip/d;/^$/d' /usr/lib/rooter/connect/create_connect.sh
 
-sed -i '/#!\/bin\/sh/a\\nkill -9 \$\(pgrep -f restart_wan)' /usr/lib/rooter/connect/create_connect.sh
+sed -i '/#!\/bin\/sh/a\\nkill -9 \$\(pgrep -f change_ip)' /usr/lib/rooter/connect/create_connect.sh
 
-sed -i '/#!\/bin\/sh/a\\nkill -9 \$\(pgrep -f \/etc\/arca\/restart_wan)' /usr/lib/rooter/connect/create_connect.sh
+sed -i '/#!\/bin\/sh/a\\nkill -9 \$\(pgrep -f \/etc\/arca\/change_ip)' /usr/lib/rooter/connect/create_connect.sh
 
-sed -i '/if \[ -e \/etc\/arca\/restart_wan \].*$/,/fi/d' /usr/lib/rooter/connect/create_connect.sh
+sed -i '/if \[ -e \/etc\/arca\/change_ip \].*$/,/fi/d' /usr/lib/rooter/connect/create_connect.sh
 
-echo -e "	if [ -e /etc/arca/restart_wan ]; then
-		/etc/arca/restart_wan &
+echo -e "	if [ -e /etc/arca/change_ip ]; then
+		/etc/arca/change_ip &
 	fi" >>/usr/lib/rooter/connect/create_connect.sh
 
 cat << 'EOF' >/etc/arca/change_ip
@@ -77,7 +77,7 @@ while true; do
 done
 EOF
 
-if [ $(pgrep -f /etc/arca/change_ip | wc -l) -ge 1 ]; then
+if [ -n $(pgrep -f /etc/arca/change_ip) ]; then
 	kill -9 $(pgrep -f /etc/arca/change_ip)
 fi
 
