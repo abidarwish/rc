@@ -12,7 +12,7 @@ if [ "$(cat /tmp/sysinfo/model)" != "Arcadyan AW1000" ]; then
 fi
 
 if [ -z $(which uqmi) ]; then
-	echo "Only QMI is supported"
+	echo "Only QMI protocol is supported"
 	exit 1
 fi
 
