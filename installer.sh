@@ -11,6 +11,11 @@ if [ "$(cat /tmp/sysinfo/model)" != "Arcadyan AW1000" ]; then
 	exit 1
 fi
 
+if [ -z $(which uqmi) ]; then
+	echo "Only QMI is supported"
+	exit 1
+fi
+
 if [ ! -e /etc/arca ]; then
 	mkdir -p /etc/arca
 fi
