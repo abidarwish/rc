@@ -43,6 +43,8 @@ log() {
         modlog "$@"
 }
 
+log "Start rc script"
+
 n=0
 >/tmp/wan_status
 while true; do
