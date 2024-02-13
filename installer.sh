@@ -53,7 +53,7 @@ log "Start RC script"
 n=0
 >/tmp/wan_status
 while true; do
-	if [ $(curl -I -s -o /dev/null -w "%{http_code}" https://www.youtube.com) -eq 200 ] && [ $(curl -fsSL -w %{http_code} -o /dev/null "https://www.netflix.com") -eq 200 ]; then
+	if [ $(curl -I -s -o /dev/null -w "%{http_code}" https://www.youtube.com) -eq 200 ] && [ $(curl -I -s -o /dev/null -w "%{http_code}" https://fast.com) -eq 200 ]; then
  		echo -e "$(date) \t Internet is fine" | tee -a /tmp/wan_status
 	else
 		/usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 "AT+CFUN=0" >/dev/null 2>&1 && /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 "AT+CFUN=1" >/dev/null 2>&1
