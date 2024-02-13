@@ -12,7 +12,7 @@ if [ "$(cat /tmp/sysinfo/model)" != "Arcadyan AW1000" ]; then
 fi
 
 if [ $(uci get modem.modem1.proto) -ne 88 ]; then
-	echo "Only QMI protocol is supported"
+	echo "Only QMI Protocol is supported"
 	exit 1
 fi
 
@@ -55,7 +55,7 @@ n=0
 while true; do
 	if [ $(curl -I -s -o /dev/null -w "%{http_code}" https://www.youtube.com) -eq 200 ] && [ $(curl -fsSL -w %{http_code} -o /dev/null "https://www.netflix.com") -eq 200 ]; then
  		echo -e "$(date) \t Internet is fine" | tee -a /tmp/wan_status
-        else
+	else
 		/usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 "AT+CFUN=0" >/dev/null 2>&1 && /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 "AT+CFUN=1" >/dev/null 2>&1
                 sleep 10
                 WAN_IP=$(curl -s ipinfo.io/ip)
