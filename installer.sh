@@ -12,7 +12,7 @@ if [ "$(cat /tmp/sysinfo/model)" != "Arcadyan AW1000" ]; then
 fi
 
 if [ $(uci get modem.modem1.proto) -ne 88 ]; then
-        echo "Only QMI protocol is supported"
+	echo "Only QMI protocol is supported"
 	exit 1
 fi
 
@@ -48,7 +48,7 @@ log() {
         modlog "$@"
 }
 
-log "Start rc script"
+log "Start RC script"
 
 n=0
 >/tmp/wan_status
