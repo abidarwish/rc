@@ -53,34 +53,30 @@ log "Start RC script"
 n=0
 >/tmp/wan_status
 while true; do
-        if ping -q -c 3 -W 1 -6 2606:4700:4700::1111 >/dev/null 2>&1; then
-                echo -e "$(date) \t Internet is fine" | tee -a /tmp/wan_status
+	if [ $(curl -I -s -o /dev/null -w "%{http_code}" https://www.youtube.com) -eq 200 ] && [ $(curl -fsSL -w %{http_code} -o /dev/null "https://www.netflix.com") -eq 200 ]; then
+ 		echo -e "$(date) \t Internet is fine" | tee -a /tmp/wan_status
         else
-                if ping -q -c 3 -W 1 1.1.1.1 >/dev/null; then
-                        echo -e "$(date) \t Internet is fine" | tee -a /tmp/wan_status
+		/usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 "AT+CFUN=0" >/dev/null 2>&1 && /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 "AT+CFUN=1" >/dev/null 2>&1
+                sleep 10
+                WAN_IP=$(curl -s ipinfo.io/ip)
+                if [ -n ${WAN_IP} ]; then
+                        log "Disconnected. WAN IP changed to ${WAN_IP}"
+                        >/etc/arca/counter
                 else
-                        /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 "AT+CFUN=0" >/dev/null 2>&1 && /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 "AT+CFUN=1" >/dev/null 2>&1
-                        sleep 10
-                        WAN_IP=$(curl -s ipinfo.io/ip)
-                        if [ -n ${WAN_IP} ]; then
-                        	log "Disconnected. WAN IP changed to ${WAN_IP}"
+                        n=$(( $n + 1 ))
+                        echo "$n" >/etc/arca/counter
+                        if [ $(cat /etc/arca/counter) -ge 3 ]; then
+                        	log "Disconnected. Check your SIM card"
                         	>/etc/arca/counter
-                        else
-                        	n=$(( $n + 1 ))
-                        	echo "$n" >/etc/arca/counter
-                        	if [ $(cat /etc/arca/counter) -ge 3 ]; then
-                        		log "Disconnected. Check your SIM card"
-                        		>/etc/arca/counter
-                        		exit 0
-                        	fi
-                        	if [ $(cat /etc/arca/counter) -eq 2 ]; then
-					log "Restart module"
-					/us/lib/rooter/gcom/gcom-locked/dev/ttyUSB2 run-at.gcom 1 "AT+CFUN=1,1"
-				fi
+                        	exit 0
                         fi
+                        if [ $(cat /etc/arca/counter) -eq 2 ]; then
+				log "Restart module"
+				/us/lib/rooter/gcom/gcom-locked/dev/ttyUSB2 run-at.gcom 1 "AT+CFUN=1,1"
+			fi
                 fi
         fi
-        sleep 30
+	sleep 30
 done
 EOF
 
