@@ -1,6 +1,12 @@
 #!/bin/sh
 #script by Abi Darwish
 
+#Cleanup from previous beta installation
+rm -rf /etc/arca/restart_wan
+sed -i '/^.*pgrep -f restart_wan/d;/^$/d' /usr/lib/rooter/connect/create_connect.sh
+sed -i '/^.*pgrep -f \/etc\/arca\/restart_wan/d;/^$/d' /usr/lib/rooter/connect/create_connect.sh
+sed -i '/if \[ -e \/etc\/arca\/restart_wan \].*$/,/fi/d' /usr/lib/rooter/connect/create_connect.sh
+
 if [ $(uname -a | cut -d' ' -f2) != "QWRT" ]; then
 	echo "Only QWRT is supported"
 	exit 1
