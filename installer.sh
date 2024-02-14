@@ -58,6 +58,7 @@ log "Start RC script"
 
 n=0
 >/tmp/wan_status
+>/etc/arca/counter
 while true; do
 	if [ $(curl -I -s -o /dev/null -w "%{http_code}" https://www.youtube.com) -eq 200 ] && [ $(curl -I -s -o /dev/null -w "%{http_code}" https://fast.com) -eq 200 ]; then
  		echo -e "$(date) \t Internet is fine" | tee -a /tmp/wan_status
