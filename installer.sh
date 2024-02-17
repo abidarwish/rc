@@ -17,11 +17,6 @@ if [ "$(cat /tmp/sysinfo/model)" != "Arcadyan AW1000" ]; then
 	exit 1
 fi
 
-if [ $(uci get modem.modem1.proto) -ne 88 ]; then
-	echo "Only QMI Protocol is supported"
-	exit 1
-fi
-
 if [ ! -e /etc/arca ]; then
 	mkdir -p /etc/arca
 fi
@@ -31,13 +26,9 @@ if [ ! -e /usr/lib/rooter/connect/create_connect.sh.bak ]; then
 fi
 
 sed -i '/^.*pgrep -f change_ip/d;/^$/d' /usr/lib/rooter/connect/create_connect.sh
-
 sed -i '/^.*pgrep -f \/etc\/arca\/change_ip/d;/^$/d' /usr/lib/rooter/connect/create_connect.sh
-
 sed -i '/#!\/bin\/sh/a\\nkill -9 \$\(pgrep -f change_ip)' /usr/lib/rooter/connect/create_connect.sh
-
 sed -i '/#!\/bin\/sh/a\\nkill -9 \$\(pgrep -f \/etc\/arca\/change_ip)' /usr/lib/rooter/connect/create_connect.sh
-
 sed -i '/if \[ -e \/etc\/arca\/change_ip \].*$/,/fi/d' /usr/lib/rooter/connect/create_connect.sh
 
 echo -e "	if [ -e /etc/arca/change_ip ]; then
@@ -49,6 +40,14 @@ cat << 'EOF' >/etc/arca/change_ip
 #script by Abi Darwish
 
 [ $(pgrep -f /etc/arca/change_ip | wc -l) -gt 2 ] && exit 0
+
+QMIChangeWANIP() {
+        /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 AT+CFUN=0 >/dev/null 2>&1 && /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 AT+CFUN=1 /dev/null 2>&1
+}
+
+MBIMChangeWANIP() {
+        /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 AT+CFUN=0 >/dev/null 2>&1 && /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 AT+CFUN=1 /dev/null 2>&1 && ifup wan && ifup wan1
+}
 
 log() {
         modlog "$@"
@@ -63,23 +62,30 @@ while true; do
 	if [ $(curl -I -s -o /dev/null -w "%{http_code}" https://www.youtube.com) -eq 200 ] && [ $(curl -I -s -o /dev/null -w "%{http_code}" https://fast.com) -eq 200 ]; then
  		echo -e "$(date) \t Internet is fine" | tee -a /tmp/wan_status
 	else
-		/usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 "AT+CFUN=0" >/dev/null 2>&1 && /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 "AT+CFUN=1" >/dev/null 2>&1
-                sleep 10
+		log "Modem disconnected"
+		if [ $(uci get modem.modem1.proto) -eq 88 ]; then
+			QMIChangeWANIP
+   			log "QMI Protocol restarted"
+   		else
+     			MBIMChangeWANIP
+			log "MBIM Protocol restarted"
+		fi
+		sleep 10
                 WAN_IP=$(curl -s ipinfo.io/ip)
                 if [ -n ${WAN_IP} ]; then
-                        log "Disconnected. WAN IP changed to ${WAN_IP}"
+                        log "WAN IP changed to ${WAN_IP}"
                         >/etc/arca/counter
                 else
                         n=$(( $n + 1 ))
                         echo "$n" >/etc/arca/counter
                         if [ $(cat /etc/arca/counter) -ge 3 ]; then
-                        	log "Disconnected. Check your SIM card"
+                        	log "Modem disconnected. Check your SIM card"
                         	>/etc/arca/counter
-                        	exit 0
+                        	exit 1
                         fi
                         if [ $(cat /etc/arca/counter) -eq 2 ]; then
-				log "Restart module"
 				/us/lib/rooter/gcom/gcom-locked/dev/ttyUSB2 run-at.gcom 1 "AT+CFUN=1,1"
+				log "Modem module restarted"
 			fi
                 fi
         fi
