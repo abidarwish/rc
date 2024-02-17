@@ -93,7 +93,7 @@ while true; do
 done
 EOF
 
-if [ -n $(pgrep -f /etc/arca/change_ip) ]; then
+if [ ! -z $(pgrep -f /etc/arca/change_ip) ]; then
 	kill -9 $(pgrep -f /etc/arca/change_ip)
 fi
 
