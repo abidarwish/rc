@@ -1,5 +1,5 @@
-# rc
-Arcadyan AW1000 auto-reconnect script
+# RC Script
+Arcadyan AW1000 auto-reconnect script.
 
 # Install
 ```
