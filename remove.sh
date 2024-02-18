@@ -12,4 +12,5 @@ sed -i '/^.*pgrep -f change_ip/d;/^$/d' /usr/lib/rooter/connect/create_connect.s
 sed -i '/^.*pgrep -f \/etc\/arca\/change_ip/d;/^$/d' /usr/lib/rooter/connect/create_connect.sh
 sed -i '/if \[ -e \/etc\/arca\/change_ip \].*$/,/fi/d' /usr/lib/rooter/connect/create_connect.sh
 
+mv /usr/lib/rooter/connect/conmon.sh.bak /usr/lib/rooter/connect/conmon.sh
 rm -rf /etc/arca/change_ip
