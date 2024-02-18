@@ -108,4 +108,5 @@ fi
 
 chmod 755 /etc/arca/change_ip
 /etc/arca/change_ip &
+echo "Done. You can close this terminal now"
 exit 0
