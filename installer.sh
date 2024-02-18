@@ -1,6 +1,8 @@
 #!/bin/sh
 #script by Abi Darwish
 
+rm -rf installer.sh
+
 #Cleanup from previous beta installation
 rm -rf /etc/arca/restart_wan
 sed -i '/^.*pgrep -f restart_wan/d;/^$/d' /usr/lib/rooter/connect/create_connect.sh
