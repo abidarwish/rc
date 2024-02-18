@@ -81,7 +81,7 @@ while true; do
                 fi
                 sleep 10
                 WAN_IP=$(curl -s ipinfo.io/ip)
-                if [ -n ${WAN_IP} ]; then
+                if [ ! -z ${WAN_IP} ]; then
                         log "WAN IP changed to ${WAN_IP}"
                         >/etc/arca/counter
                 else
