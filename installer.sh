@@ -87,14 +87,13 @@ while true; do
                 else
                         n=$(( $n + 1 ))
                         echo "$n" >/etc/arca/counter
-                        if [ $(cat /etc/arca/counter) -ge 3 ]; then
-                                log "Modem disconnected. Check your SIM card"
-                                >/etc/arca/counter
-                                exit 1
-                        fi
                         if [ $(cat /etc/arca/counter) -eq 2 ]; then
                                 /us/lib/rooter/gcom/gcom-locked/dev/ttyUSB2 run-at.gcom 1 "AT+CFUN=1,1"
                                 log "Modem module restarted"
+                        elif [ $(cat /etc/arca/counter) -ge 3 ]; then
+                                log "Modem disconnected. Check your SIM card"
+                                >/etc/arca/counter
+                                exit 1
                         fi
                 fi
         fi
