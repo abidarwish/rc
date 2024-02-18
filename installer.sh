@@ -8,21 +8,21 @@ sed -i '/^.*pgrep -f \/etc\/arca\/restart_wan/d;/^$/d' /usr/lib/rooter/connect/c
 sed -i '/if \[ -e \/etc\/arca\/restart_wan \].*$/,/fi/d' /usr/lib/rooter/connect/create_connect.sh
 
 if [ $(uname -a | cut -d' ' -f2) != "QWRT" ]; then
-	echo "Only QWRT is supported"
-	exit 1
+        echo "Only QWRT is supported"
+        exit 1
 fi
 
 if [ "$(cat /tmp/sysinfo/model)" != "Arcadyan AW1000" ]; then
         echo "Only Arcadyan AW1000 is supported"
-	exit 1
+        exit 1
 fi
 
 if [ ! -e /etc/arca ]; then
-	mkdir -p /etc/arca
+        mkdir -p /etc/arca
 fi
 
 if [ ! -e /usr/lib/rooter/connect/create_connect.sh.bak ]; then
-	cp /usr/lib/rooter/connect/create_connect.sh /usr/lib/rooter/connect/create_connect.sh.bak
+        cp /usr/lib/rooter/connect/create_connect.sh /usr/lib/rooter/connect/create_connect.sh.bak
 fi
 
 sed -i '/^.*pgrep -f change_ip/d;/^$/d' /usr/lib/rooter/connect/create_connect.sh
@@ -31,9 +31,22 @@ sed -i '/#!\/bin\/sh/a\\nkill -9 \$\(pgrep -f change_ip)' /usr/lib/rooter/connec
 sed -i '/#!\/bin\/sh/a\\nkill -9 \$\(pgrep -f \/etc\/arca\/change_ip)' /usr/lib/rooter/connect/create_connect.sh
 sed -i '/if \[ -e \/etc\/arca\/change_ip \].*$/,/fi/d' /usr/lib/rooter/connect/create_connect.sh
 
-echo -e "	if [ -e /etc/arca/change_ip ]; then
-		/etc/arca/change_ip &
-	fi" >>/usr/lib/rooter/connect/create_connect.sh
+if [ ! -e /usr/lib/rooter/connect/conmon.sh.bak ]; then
+        cp /usr/lib/rooter/connect/conmon.sh /usr/lib/rooter/connect/conmon.sh.bak
+fi
+
+#if [ $(uci get modem.modem1.proto) -eq 88 ]; then
+#       echo -e "       if [ -e /etc/arca/change_ip ]; then
+#               /etc/arca/change_ip &
+#       fi" >>/usr/lib/rooter/connect/create_connect.sh
+#else
+        echo -e "#!/bin/sh
+#script by Abi Darwish
+
+if [ -e /etc/arca/change_ip ]; then
+        /etc/arca/change_ip &
+fi" >/usr/lib/rooter/connect/conmon.sh
+#fi
 
 cat << 'EOF' >/etc/arca/change_ip
 #!/bin/sh
@@ -59,18 +72,18 @@ n=0
 >/tmp/wan_status
 >/etc/arca/counter
 while true; do
-	if [ $(curl -I -s -o /dev/null -w "%{http_code}" https://www.youtube.com) -eq 200 ] && [ $(curl -I -s -o /dev/null -w "%{http_code}" https://fast.com) -eq 200 ]; then
- 		echo -e "$(date) \t Internet is fine" | tee -a /tmp/wan_status
-	else
-		log "Modem disconnected"
-		if [ $(uci get modem.modem1.proto) -eq 88 ]; then
-			QMIChangeWANIP
-   			log "QMI Protocol restarted"
-   		else
-     			MBIMChangeWANIP
-			log "MBIM Protocol restarted"
-		fi
-		sleep 10
+        if [ $(curl -I -s -o /dev/null -w "%{http_code}" https://www.youtube.com) -eq 200 ] && [ $(curl -I -s -o /dev/null -w "%{http_code}" https://fast.com) -eq 200 ]; then
+                echo -e "$(date) \t Internet is fine" | tee -a /tmp/wan_status
+        else
+                log "Modem disconnected"
+                if [ $(uci get modem.modem1.proto) -eq 88 ]; then
+                        QMIChangeWANIP
+                        log "QMI Protocol restarted"
+                else
+                        MBIMChangeWANIP
+                        log "MBIM Protocol restarted"
+                fi
+                sleep 10
                 WAN_IP=$(curl -s ipinfo.io/ip)
                 if [ -n ${WAN_IP} ]; then
                         log "WAN IP changed to ${WAN_IP}"
@@ -79,22 +92,22 @@ while true; do
                         n=$(( $n + 1 ))
                         echo "$n" >/etc/arca/counter
                         if [ $(cat /etc/arca/counter) -ge 3 ]; then
-                        	log "Modem disconnected. Check your SIM card"
-                        	>/etc/arca/counter
-                        	exit 1
+                                log "Modem disconnected. Check your SIM card"
+                                >/etc/arca/counter
+                                exit 1
                         fi
                         if [ $(cat /etc/arca/counter) -eq 2 ]; then
-				/us/lib/rooter/gcom/gcom-locked/dev/ttyUSB2 run-at.gcom 1 "AT+CFUN=1,1"
-				log "Modem module restarted"
-			fi
+                                /us/lib/rooter/gcom/gcom-locked/dev/ttyUSB2 run-at.gcom 1 "AT+CFUN=1,1"
+                                log "Modem module restarted"
+                        fi
                 fi
         fi
-	sleep 30
+        sleep 30
 done
 EOF
 
 if [ ! -z $(pgrep -f /etc/arca/change_ip) ]; then
-	kill -9 $(pgrep -f /etc/arca/change_ip)
+        kill -9 $(pgrep -f /etc/arca/change_ip)
 fi
 
 chmod 755 /etc/arca/change_ip
