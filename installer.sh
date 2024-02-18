@@ -35,18 +35,12 @@ if [ ! -e /usr/lib/rooter/connect/conmon.sh.bak ]; then
         cp /usr/lib/rooter/connect/conmon.sh /usr/lib/rooter/connect/conmon.sh.bak
 fi
 
-#if [ $(uci get modem.modem1.proto) -eq 88 ]; then
-#       echo -e "       if [ -e /etc/arca/change_ip ]; then
-#               /etc/arca/change_ip &
-#       fi" >>/usr/lib/rooter/connect/create_connect.sh
-#else
-        echo -e "#!/bin/sh
+echo -e "#!/bin/sh
 #script by Abi Darwish
 
 if [ -e /etc/arca/change_ip ]; then
         /etc/arca/change_ip &
 fi" >/usr/lib/rooter/connect/conmon.sh
-#fi
 
 cat << 'EOF' >/etc/arca/change_ip
 #!/bin/sh
