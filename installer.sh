@@ -101,6 +101,11 @@ while true; do
 done
 EOF
 
+#Kill previous beta RC Script daemon
+if [ ! -z $(pgrep -f /etc/arca/restart_wan) ]; then
+        kill -9 $(pgrep -f /etc/arca/restart_wan)
+fi
+
 if [ ! -z $(pgrep -f /etc/arca/change_ip) ]; then
         kill -9 $(pgrep -f /etc/arca/change_ip)
 fi
