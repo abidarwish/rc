@@ -69,7 +69,7 @@ n=0
 #>/etc/arca/counter
 while true; do
         if [ $(curl -I -s -o /dev/null -w "%{http_code}" https://www.youtube.com) -eq 200 ] && [ $(curl -I -s -o /dev/null -w "%{http_code}" https://fast.com) -eq 200 ]; then
-                echo -e "$(date) \t Internet is fine" | tee -a /tmp/wan_status
+                echo -e "$(date) \t Internet is fine" >>/tmp/wan_status
         else
                 log "Modem disconnected"
                 if [ $(uci get modem.modem1.proto) -eq 88 ]; then
