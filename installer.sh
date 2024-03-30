@@ -1,7 +1,7 @@
 #!/bin/sh
 #script by Abi Darwish
 
-rm -rf installer.sh
+rm -rf $0
 
 #Cleanup from previous beta installation
 rm -rf /etc/arca/restart_wan
@@ -27,11 +27,13 @@ if [ ! -e /usr/lib/rooter/connect/create_connect.sh.bak ]; then
         cp /usr/lib/rooter/connect/create_connect.sh /usr/lib/rooter/connect/create_connect.sh.bak
 fi
 
+#Initialize
 sed -i '/^.*pgrep -f change_ip/d;/^$/d' /usr/lib/rooter/connect/create_connect.sh
 sed -i '/^.*pgrep -f \/etc\/arca\/change_ip/d;/^$/d' /usr/lib/rooter/connect/create_connect.sh
 sed -i '/#!\/bin\/sh/a\\nkill -9 \$\(pgrep -f change_ip)' /usr/lib/rooter/connect/create_connect.sh
 sed -i '/#!\/bin\/sh/a\\nkill -9 \$\(pgrep -f \/etc\/arca\/change_ip)' /usr/lib/rooter/connect/create_connect.sh
 sed -i '/if \[ -e \/etc\/arca\/change_ip \].*$/,/fi/d' /usr/lib/rooter/connect/create_connect.sh
+>/etc/arca/counter
 
 if [ ! -e /usr/lib/rooter/connect/conmon.sh.bak ]; then
         cp /usr/lib/rooter/connect/conmon.sh /usr/lib/rooter/connect/conmon.sh.bak
@@ -64,9 +66,13 @@ log() {
 
 log "Start RC script"
 
-n=0
+if [ $(cat /etc/arca/counter | wc -l) -eq 0 ]; then
+        n=0
+else
+        n=$(cat /etc/arca/counter)
+fi
+
 >/tmp/wan_status
-#>/etc/arca/counter
 while true; do
         if [ $(curl -I -s -o /dev/null -w "%{http_code}" https://www.youtube.com) -eq 200 ] && [ $(curl -I -s -o /dev/null -w "%{http_code}" https://fast.com) -eq 200 ]; then
                 echo -e "$(date) \t Internet is fine" >>/tmp/wan_status
@@ -90,7 +96,6 @@ while true; do
                         if [ $(cat /etc/arca/counter) -eq 2 ]; then
                                 /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 "AT+CFUN=1,1"
                                 log "Modem module restarted"
-                                sleep 120
                         elif [ $(cat /etc/arca/counter) -ge 3 ]; then
                                 log "Modem disconnected. Check your SIM card"
                                 >/etc/arca/counter
@@ -107,6 +112,7 @@ if [ ! -z $(pgrep -f /etc/arca/restart_wan) ]; then
         kill -9 $(pgrep -f /etc/arca/restart_wan)
 fi
 
+#Kill currently running RC Script daemon
 if [ ! -z $(pgrep -f /etc/arca/change_ip) ]; then
         kill -9 $(pgrep -f /etc/arca/change_ip)
 fi
