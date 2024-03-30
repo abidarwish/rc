@@ -90,6 +90,7 @@ while true; do
                         if [ $(cat /etc/arca/counter) -eq 2 ]; then
                                 /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 "AT+CFUN=1,1"
                                 log "Modem module restarted"
+                                sleep 120
                         elif [ $(cat /etc/arca/counter) -ge 3 ]; then
                                 log "Modem disconnected. Check your SIM card"
                                 >/etc/arca/counter
