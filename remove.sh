@@ -1,7 +1,7 @@
 #!/bin/sh
 #script by Abi Darwish
 
-if [ -n $(pgrep -f change_ip); then
+if [ -n $(pgrep -f change_ip) ]; then
 	kill -9 $(pgrep -f change_ip)
 fi
 if [ -n $(pgrep -f /etc/arca/change_ip) ]; then
