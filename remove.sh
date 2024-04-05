@@ -1,10 +1,10 @@
 #!/bin/sh
 #script by Abi Darwish
 
-if [ -n $(pgrep -f change_ip) ]; then
+if [ $(pgrep -f change_ip | wc -l) -ne 0 ]; then
 	kill -9 $(pgrep -f change_ip)
 fi
-if [ -n $(pgrep -f /etc/arca/change_ip) ]; then
+if [ $(pgrep -f /etc/arca/change_ip | wc -l) -ne 0 ]; then
 	kill -9 $(pgrep -f /etc/arca/change_ip)
 fi
 
@@ -12,5 +12,8 @@ sed -i '/^.*pgrep -f change_ip/d;/^$/d' /usr/lib/rooter/connect/create_connect.s
 sed -i '/^.*pgrep -f \/etc\/arca\/change_ip/d;/^$/d' /usr/lib/rooter/connect/create_connect.sh
 sed -i '/if \[ -e \/etc\/arca\/change_ip \].*$/,/fi/d' /usr/lib/rooter/connect/create_connect.sh
 
-mv /usr/lib/rooter/connect/conmon.sh.bak /usr/lib/rooter/connect/conmon.sh
+if [ -e /usr/lib/rooter/connect/conmon.sh.bak ]; then
+        mv /usr/lib/rooter/connect/conmon.sh.bak /usr/lib/rooter/connect/conmon.sh
+fi
+
 rm -rf /etc/arca/change_ip
