@@ -33,9 +33,9 @@ sed -i '/^.*pgrep -f \/etc\/arca\/change_ip/d;/^$/d' /usr/lib/rooter/connect/cre
 sed -i '/#!\/bin\/sh/a\\nkill -9 \$\(pgrep -f change_ip)' /usr/lib/rooter/connect/create_connect.sh
 sed -i '/#!\/bin\/sh/a\\nkill -9 \$\(pgrep -f \/etc\/arca\/change_ip)' /usr/lib/rooter/connect/create_connect.sh
 sed -i '/if \[ -e \/etc\/arca\/change_ip \].*$/,/fi/d' /usr/lib/rooter/connect/create_connect.sh
->/etc/arca/counter
 sed -i '/\/etc\/arca\/counter/d' /etc/init.d/rooter
 sed -i '/.*initialize.sh/i\t>\/etc\/arca\/counter' /etc/init.d/rooter
+>/etc/arca/counter
 
 if [ ! -e /usr/lib/rooter/connect/conmon.sh.bak ]; then
         cp /usr/lib/rooter/connect/conmon.sh /usr/lib/rooter/connect/conmon.sh.bak
