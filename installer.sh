@@ -40,6 +40,7 @@ sed -i '/.*start-quectel.sh/a\\t>\/etc\/arca\/counter' /etc/init.d/rooter
 
 if [ ! -e /usr/lib/rooter/connect/conmon.sh.bak ]; then
         cp /usr/lib/rooter/connect/conmon.sh /usr/lib/rooter/connect/conmon.sh.bak
+        chmod -x /usr/lib/rooter/connect/conmon.sh.bak
 fi
 
 echo -e "#!/bin/sh
