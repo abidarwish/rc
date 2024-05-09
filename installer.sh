@@ -78,7 +78,7 @@ fi
 
 >/tmp/wan_status
 while true; do
-        if [ $(curl -I -s -o /dev/null -w "%{http_code}" https://www.youtube.com) -eq 200 ] && [ $(curl -I -s -o /dev/null -w "%{http_code}" https://fast.com) -eq 200 ]; then
+        if [ $(curl -I -s -o /dev/null -w "%{http_code}" --max-time 5 https://www.youtube.com) -eq 200 ] && [ $(curl -I -s -o /dev/null -w "%{http_code}" --max-time 5 https://fast.com) -eq 200 ]; then
                 echo -e "$(date) \t Internet is fine" >>/tmp/wan_status
         else
                 log "Modem disconnected"
