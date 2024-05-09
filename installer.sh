@@ -90,7 +90,7 @@ while true; do
                         log "MBIM Protocol restarted"
                 fi
                 sleep 10
-                WAN_IP=$(curl -s ipinfo.io/ip)
+                WAN_IP=$(curl ifconfig.me)
                 if [ ! -z ${WAN_IP} ]; then
                         log "WAN IP changed to ${WAN_IP}"
                         >/etc/arca/counter
