@@ -54,6 +54,9 @@ cat << 'EOF' >/etc/arca/change_ip
 #!/bin/sh
 #script by Abi Darwish
 
+PDPTYPE=$(uci get modem.modem1.pdptype)
+APN=$(uci get modem.modem1.apn)
+
 [ $(pgrep -f /etc/arca/change_ip | wc -l) -gt 2 ] && exit 0
 
 QMIChangeWANIP() {
@@ -61,7 +64,8 @@ QMIChangeWANIP() {
 }
 
 MBIMChangeWANIP() {
-        /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 AT+CFUN=0 >/dev/null 2>&1 && /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 AT+CFUN=1 /dev/null 2>&1 && ifup wan && ifup wan1
+        /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 AT+CFUN=0 >/dev/null 2>&1 && /usr/lib/rooter/gcom/gcom-locked /dev/ttyU
+SB2 run-at.gcom 1 "AT+CGDCONT=1,\"${PDPTYPE},\"${APN}\"" >/dev/null 2>&1 && /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 AT+CFUN=1 >/dev/null 2>&1 && ifup wan && ifup wan1
 }
 
 log() {
