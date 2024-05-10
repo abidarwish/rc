@@ -64,8 +64,7 @@ QMIChangeWANIP() {
 }
 
 MBIMChangeWANIP() {
-        /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 AT+CFUN=0 >/dev/null 2>&1 && /usr/lib/rooter/gcom/gcom-locked /dev/ttyU
-SB2 run-at.gcom 1 "AT+CGDCONT=1,\"${PDPTYPE}\",\"${APN}\"" >/dev/null 2>&1 && /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 AT+CFUN=1 >/dev/null 2>&1 && ifup wan && ifup wan1
+        /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 AT+CFUN=0 >/dev/null 2>&1 && /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 "AT+CGDCONT=1,\"${PDPTYPE}\",\"${APN}\"" >/dev/null 2>&1 && /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 AT+CFUN=1 >/dev/null 2>&1 && ifup wan && ifup wan1
 }
 
 log() {
