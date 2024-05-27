@@ -54,8 +54,8 @@ cat << 'EOF' >/etc/arca/change_ip
 #!/bin/sh
 #script by Abi Darwish
 
-PDPTYPE=$(uci get modem.modem1.pdptype)
-APN=$(uci get modem.modem1.apn)
+PDPTYPE=$(uci -q get modem.modem1.pdptype)
+APN=$(uci -q get modem.modem1.apn)
 
 [ $(pgrep -f /etc/arca/change_ip | wc -l) -gt 2 ] && exit 0
 
