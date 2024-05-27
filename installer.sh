@@ -85,7 +85,7 @@ while true; do
                 echo -e "$(date) \t Internet is fine" >>/tmp/wan_status
         else
                 log "Modem disconnected"
-                if [ $(uci get modem.modem1.proto) -eq 88 ]; then
+                if [ $(uci -q get modem.modem1.proto) -eq 88 ]; then
                         QMIChangeWANIP
                         log "QMI Protocol restarted"
                 else
