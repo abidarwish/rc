@@ -60,16 +60,25 @@ APN=$(uci -q get modem.modem1.apn)
 [ $(pgrep -f /etc/arca/change_ip | wc -l) -gt 2 ] && exit 0
 
 QMIChangeWANIP() {
-        /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 AT+CFUN=0 >/dev/null 2>&1 && /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 AT+CFUN=1 >/dev/null 2>&1
+        /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 AT+CFUN=0 >/dev/null 2>&1
+        /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 AT+CFUN=1 >/dev/null 2>&1
 }
 
 MBIMChangeWANIP() {
-        /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 AT+CFUN=0 >/dev/null 2>&1 && /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 "AT+CGDCONT=1,\"${PDPTYPE}\",\"${APN}\"" >/dev/null 2>&1 && /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 AT+CFUN=1 >/dev/null 2>&1 && ifup wan && ifup wan1
+        /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 AT+CFUN=0 >/dev/null 2>&1
+        /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 "AT+CGDCONT=1,\"${PDPTYPE}\",\"${APN}\"" >/dev/null 2>&1
+        /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 AT+CFUN=1 >/dev/null 2>&1
+        ifup wan1
 }
 
 log() {
         modlog "$@"
 }
+
+while ! ping -c 1 google.com >/dev/null 2>&1; do
+        log "RC Script is checking internet connection..."
+        sleep 1
+done
 
 log "Start RC script"
 
@@ -87,14 +96,15 @@ while true; do
                 log "Modem disconnected"
                 if [ $(uci -q get modem.modem1.proto) -eq 88 ]; then
                         QMIChangeWANIP
+                        sleep 10
                         log "QMI Protocol restarted"
                 else
                         MBIMChangeWANIP
+                        sleep 15
                         log "MBIM Protocol restarted"
                 fi
-                sleep 10
-                WAN_IP=$(curl ifconfig.me)
-                if [ ! -z ${WAN_IP} ]; then
+                WAN_IP=$(curl -s ifconfig.me)
+                if [ "$(echo ${WAN_IP} | wc -l)" != "0" ]; then
                         log "WAN IP changed to ${WAN_IP}"
                         >/etc/arca/counter
                 else
