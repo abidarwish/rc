@@ -75,7 +75,7 @@ log() {
         modlog "$@"
 }
 
-while ! ping -c 1 google.com >/dev/null 2>&1; do
+while [ $(curl -I -s -o /dev/null -w "%{http_code}" --max-time 10 www.google.com) -ne 200 ]; do
         log "RC Script is checking internet connection..."
         sleep 1
 done
