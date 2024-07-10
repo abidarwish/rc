@@ -69,6 +69,8 @@ MBIMChangeWANIP() {
         /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 "AT+CGDCONT=1,\"${PDPTYPE}\",\"${APN}\"" >/dev/null 2>&1
         /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 AT+CFUN=1 >/dev/null 2>&1
         ifup wan1
+        sleep 5
+        ifup wan6
 }
 
 log() {
