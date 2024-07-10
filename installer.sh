@@ -69,7 +69,7 @@ MBIMChangeWANIP() {
         /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 "AT+CGDCONT=1,\"${PDPTYPE}\",\"${APN}\"" >/dev/null 2>&1
         /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 AT+CFUN=1 >/dev/null 2>&1
         ifup wan1
-        sleep 5
+        sleep 15
         ifup wan6
 }
 
@@ -102,7 +102,7 @@ while true; do
                         log "QMI Protocol restarted"
                 else
                         MBIMChangeWANIP
-                        sleep 15
+                        #sleep 15
                         log "MBIM Protocol restarted"
                 fi
                 WAN_IP=$(curl -s ifconfig.me)
