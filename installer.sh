@@ -107,8 +107,9 @@ while true; do
                         sleep 15
                         log "MBIM Protocol restarted"
                 else
+                        log "Modem protocol not detected"
                         /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 "AT+CFUN=1,1"
-                        log "Modem protocol not detected. Modem module restarted"
+                        log "Modem module restarted"
                 fi
                 WAN_IP=$(curl ifconfig.me)
                 if [ ! -z ${WAN_IP} ]; then
