@@ -69,18 +69,20 @@ MBIMChangeWANIP() {
         /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 "AT+CGDCONT=1,\"${PDPTYPE}\",\"${APN}\"" >/dev/null 2>&1
         /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 AT+CFUN=1 >/dev/null 2>&1
         ifup wan1
-        sleep 15
-        ifup wan6
 }
 
 log() {
         modlog "$@"
 }
 
-while [ $(curl -I -s -o /dev/null -w "%{http_code}" --max-time 10 www.google.com) -ne 200 ]; do
-        log "RC Script is checking internet connection..."
-        sleep 1
-done
+connectInternet() {
+        while [ $(curl -I -s -o /dev/null -w "%{http_code}" --max-time 10 www.google.com) -ne 200 ]; do
+                log "RC Script is checking internet connection..."
+                sleep 1
+        done
+}
+
+connectInternet
 
 log "Start RC script"
 
@@ -100,13 +102,16 @@ while true; do
                         QMIChangeWANIP
                         sleep 10
                         log "QMI Protocol restarted"
-                else
+                elif [ $(uci -q get modem.modem1.proto) -eq 30 ]; then
                         MBIMChangeWANIP
-                        #sleep 15
+                        sleep 15
                         log "MBIM Protocol restarted"
+                else
+                        /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 "AT+CFUN=1,1"
+                        log "Modem protocol not detected. Modem module restarted"
                 fi
-                WAN_IP=$(curl -s ifconfig.me)
-                if [ "$(echo ${WAN_IP} | wc -l)" != "0" ]; then
+                WAN_IP=$(curl ifconfig.me)
+                if [ ! -z ${WAN_IP} ]; then
                         log "WAN IP changed to ${WAN_IP}"
                         >/etc/arca/counter
                 else
