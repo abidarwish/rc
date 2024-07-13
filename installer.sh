@@ -43,6 +43,10 @@ if [ ! -e /usr/lib/rooter/connect/conmon.sh.bak ]; then
         chmod -x /usr/lib/rooter/connect/conmon.sh.bak
 fi
 
+if [ ! -e /etc/arca/quectel_version ]; then
+        echo "$(/usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 ATI | grep Revision)" >/etc/arca/quectel_version
+fi
+
 echo -e "#!/bin/sh
 #script by Abi Darwish
 
@@ -105,8 +109,12 @@ while true; do
                         sleep 10
                         log "QMI Protocol restarted"
                 elif [ $(uci -q get modem.modem1.proto) -eq 30 ]; then
-                        MBIMChangeWANIP
-                        sleep 15
+                        if [ $(grep -c -o R13 /etc/arca/quectel_version) -ne 0 ]; then
+                                MBIMChangeWANIP
+                                sleep 15
+                        else
+                                /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 "AT+CFUN=1,1"
+                        fi        
                         log "MBIM Protocol restarted"
                 else
                         log "Modem protocol not detected"
