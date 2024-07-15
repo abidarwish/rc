@@ -112,10 +112,10 @@ while true; do
                         if [ $(grep -c -o R13 /etc/arca/quectel_version) -ne 0 ]; then
                                 MBIMChangeWANIP
                                 sleep 15
-                                log "MBIM Protocol restarted"
+                                log "R13 MBIM Protocol restarted"
                         else
                                 /usr/lib/rooter/gcom/gcom-locked /dev/ttyUSB2 run-at.gcom 1 "AT+CFUN=1,1"
-                                log "Modem module restarted"
+                                log "non-R13 MBIM module restarted"
                         fi
                 else
                         log "Modem protocol not detected"
